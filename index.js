@@ -1,6 +1,9 @@
 const inquirer = require("inquirer");
 const fs = require("fs");
 const util = require("util");
+const axios = require("axios");
+let email = "";
+let gitHubAvatar = "";
 
 const writeToFile = util.promisify(fs.writeFile);
 
@@ -15,10 +18,22 @@ const questions = [
     name: "language",
     message: "What languages did you use on this project?",
     choices: [
-        "HTML", 
-        "CSS", 
-        "JavaScript", 
-        "MySQL"
+        {
+        name: "HTML",
+        value: `<img src="https://img.shields.io/badge/language-HTML-brightgreen">`,
+        }, 
+        {
+        name: "CSS",
+        value: `<img src="https://img.shields.io/badge/language-CSS-blue">`,
+        },  
+        {
+        name: "JavaScript",
+        value: `<img src="https://img.shields.io/badge/language-JavaScript-blueviolet">`,
+        }, 
+        {
+        name: "MySQL",
+        value: `<img src ="https://img.shields.io/badge/language-MySQL-orange">`,
+        }, 
       ]
 },
 
@@ -33,13 +48,6 @@ const questions = [
     name: "description",
     message: "Please describe your project:"
 },
-
-// {
-//     type: "input",
-//     name: "tableofcontents",
-//     message: ""
-// },
-
 {
     type: "input",
     name: "installation",
@@ -58,10 +66,18 @@ const questions = [
     name: "license",
     message: "Which license would you like for your project?",
     choices: [
-        "MIT",
-        "GNU GPLv3",
-        "Apache License 2.0",
-        "ISC",
+        {name: "MIT",
+        value: `MIT License: https://choosealicense.com/licenses/mit/`,
+    },
+        {name: "GNU GPLv3",
+        value: "GNU GPLv3 License: https://choosealicense.com/licenses/gpl-3.0/",
+},
+        {name: "Apache License 2.0",
+        value: "Apache License 2.0: https://choosealicense.com/licenses/apache-2.0/",
+},
+        {name: "ISC",
+        value: "ISC License: https://choosealicense.com/licenses/isc/",
+}
     ]
 },
 
@@ -91,21 +107,28 @@ const questions = [
 
 ];
 
-inquirer.prompt(questions).then(( { name, language, title, description, tableofcontents, installation, usage, license, credits, tests, githubURL, email } ) => {
-    console.log(data.name);
-    console.log(data.language);
-    console.log(data.license);
+inquirer.prompt(questions).then( async ( { name, language, title, description, installation, usage, license, credits, tests, githubURL} ) => {
+    console.log(name);
+    console.log(language);
+    console.log(license);
 
-let readmeTemplate = `
+    const query = `https://api.github.com/users/${githubURL}/events/public`
+    const res = await axios.get(query);
+        email = res.data[1].payload.commits[0].author.email;
+        gitHubAvatar = res.data[1].actor.avatar_url;
+
+        console.log(res.data[1].payload.commits[0].author.email);
+
+        let readmeTemplate = `
 # ${title}
+
+${language}
 
 ## Description 
 
 ${description}
 
-## Table of Contents (Optional)
-
-If your README is very long, add a table of contents to make it easy for users to find what they need.
+## Table of Contents
 
 * [Installation](#installation)
 * [Usage](#usage)
@@ -128,7 +151,7 @@ ${credits}
 
 ## License
 
-
+${license}
 
 ---
 
@@ -266,9 +289,16 @@ https://www.contributor-covenant.org/translations.
 
 ${tests}
 
+<hr>
+Created by:
+<img src="${gitHubAvatar}" height="36px" width="36px"> 
+${name}
 `;
 
-writeToFile("README.md", readmeTemplate, "utf8");
+
+
+        writeToFile("README.md", readmeTemplate, "utf8");
+
 }).then(() => {
     console.log("Success!");
 }).catch(err => {
