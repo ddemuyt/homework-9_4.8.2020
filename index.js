@@ -119,10 +119,10 @@ inquirer.prompt(questions).then( async ( { name, language, title, description, i
 
         console.log(res.data[1].payload.commits[0].author.email);
 
-        let readmeTemplate = `
-# ${title}
+        
+let readmeTemplate = `# ${title}
 
-${language}
+${language.join(" ")}
 
 ## Description 
 
