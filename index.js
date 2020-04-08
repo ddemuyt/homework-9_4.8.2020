@@ -7,110 +7,122 @@ let gitHubAvatar = "";
 
 const writeToFile = util.promisify(fs.writeFile);
 
-const questions = [
-{
-    type: "input",
-    name: "name",
-    message: "What is your name?"
-},
-{
-    type: "checkbox",
-    name: "language",
-    message: "What languages did you use on this project?",
-    choices: [
-        {
-        name: "HTML",
-        value: `<img src="https://img.shields.io/badge/language-HTML-brightgreen">`,
-        }, 
-        {
-        name: "CSS",
-        value: `<img src="https://img.shields.io/badge/language-CSS-blue">`,
-        },  
-        {
-        name: "JavaScript",
-        value: `<img src="https://img.shields.io/badge/language-JavaScript-blueviolet">`,
-        }, 
-        {
-        name: "MySQL",
-        value: `<img src ="https://img.shields.io/badge/language-MySQL-orange">`,
-        }, 
-      ]
-},
-
-{
-    type: "input",
-    name: "title",
-    message: "What is your project title?"
-},
-
-{
-    type: "input",
-    name: "description",
-    message: "Please describe your project:"
-},
-{
-    type: "input",
-    name: "installation",
-    message: "What all needs to be installed in order for your project to work?",
-    default: "Node.js, Inquirer, and Util"
-},
-
-{
-    type: "input",
-    name: "usage",
-    message: "Please instruct how to use your project:"
-},
-
-{
-    type: "list",
-    name: "license",
-    message: "Which license would you like for your project?",
-    choices: [
-        {name: "MIT",
-        value: `MIT License: https://choosealicense.com/licenses/mit/`,
+const questions = [{
+        type: "input",
+        name: "name",
+        message: "What is your name?"
     },
-        {name: "GNU GPLv3",
-        value: "GNU GPLv3 License: https://choosealicense.com/licenses/gpl-3.0/",
-},
-        {name: "Apache License 2.0",
-        value: "Apache License 2.0: https://choosealicense.com/licenses/apache-2.0/",
-},
-        {name: "ISC",
-        value: "ISC License: https://choosealicense.com/licenses/isc/",
-}
-    ]
-},
+    {
+        type: "checkbox",
+        name: "language",
+        message: "What languages did you use on this project?",
+        choices: [{
+                name: "HTML",
+                value: `<img src="https://img.shields.io/badge/language-HTML-brightgreen">`,
+            },
+            {
+                name: "CSS",
+                value: `<img src="https://img.shields.io/badge/language-CSS-blue">`,
+            },
+            {
+                name: "JavaScript",
+                value: `<img src="https://img.shields.io/badge/language-JavaScript-blueviolet">`,
+            },
+            {
+                name: "MySQL",
+                value: `<img src ="https://img.shields.io/badge/language-MySQL-orange">`,
+            },
+        ]
+    },
 
-{
-    type: "input",
-    name: "credits",
-    message: "Who helped work on this project?"
-},
+    {
+        type: "input",
+        name: "title",
+        message: "What is your project title?"
+    },
 
-{
-    type: "input",
-    name: "tests",
-    message: "If you have any tests, please enter the file path:"
-},
+    {
+        type: "input",
+        name: "description",
+        message: "Please describe your project:"
+    },
+    {
+        type: "input",
+        name: "installation",
+        message: "What all needs to be installed in order for your project to work?",
+        default: "Node.js, Inquirer, and Util"
+    },
 
-{
-    type: "input",
-    name: "githubURL",
-    message: "Please enter your GitHub username:"
-},
+    {
+        type: "input",
+        name: "usage",
+        message: "Please instruct how to use your project:"
+    },
+
+    {
+        type: "list",
+        name: "license",
+        message: "Which license would you like for your project?",
+        choices: [{
+                name: "MIT",
+                value: `MIT License: https://choosealicense.com/licenses/mit/`,
+            },
+            {
+                name: "GNU GPLv3",
+                value: "GNU GPLv3 License: https://choosealicense.com/licenses/gpl-3.0/",
+            },
+            {
+                name: "Apache License 2.0",
+                value: "Apache License 2.0: https://choosealicense.com/licenses/apache-2.0/",
+            },
+            {
+                name: "ISC",
+                value: "ISC License: https://choosealicense.com/licenses/isc/",
+            }
+        ]
+    },
+
+    {
+        type: "input",
+        name: "credits",
+        message: "Who helped work on this project?"
+    },
+
+    {
+        type: "input",
+        name: "tests",
+        message: "If you have any tests, please enter the file path:"
+    },
+
+    {
+        type: "input",
+        name: "githubURL",
+        message: "Please enter your GitHub username:"
+    },
 
 ];
 
-inquirer.prompt(questions).then( async ( { name, language, title, description, installation, usage, license, credits, tests, githubURL} ) => {
+inquirer.prompt(questions).then(async ({
+    name,
+    language,
+    title,
+    description,
+    installation,
+    usage,
+    license,
+    credits,
+    tests,
+    githubURL
+}) => {
 
     const query = `https://api.github.com/users/${githubURL}/events/public`
     const res = await axios.get(query);
-        email = res.data[1].payload.commits[0].author.email;
-        gitHubAvatar = res.data[1].actor.avatar_url;
+    email = res.data[1].payload.commits[0].author.email;
+    gitHubAvatar = res.data[1].actor.avatar_url;
 
 
-        
-let readmeTemplate = `# ${title}
+
+    let readmeTemplate = `# ${title}
 
 ${language.join(" ")}
 
@@ -287,7 +299,7 @@ ${name}
 
 
 
-        writeToFile("README.md", readmeTemplate, "utf8");
+    writeToFile("README.md", readmeTemplate, "utf8");
 
 }).then(() => {
     console.log("Success!");
